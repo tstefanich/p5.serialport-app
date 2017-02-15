@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>p5 Serial</title>
+    <style type="text/css">
+      a{color:#00979C;}
+      body{margin:0;padding: 0;background: #ECF1F1;font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:#434F54;}
+      button:focus {outline: none;}
+      input:focus {outline: none;}
+      textarea:focus {outline: none;border:0;}
+
+      button a{color:#434F54;text-decoration: none;}
+
+      header{background:#00979C;box-sizing:border-box;padding: 16px 16px 12px 16px;width:164px;height:100%;position: fixed;}
+      header img{margin-bottom: 12px;}
+
+
+      nav {color:#A5F2EE;font-family: arial;font-weight: bold;font-size: 13px;letter-spacing: .1em;margin-left:-16px;margin-right: -16px;}
+      nav>div { padding-top:12px;padding-bottom: 12px; fill: #A5F2EE;padding-left: 18px; position: relative;}
+      nav>div.active{background-color: #80CBCD;color:#006D70;fill:#006D70}
+      nav>div:not(.active):hover{ background:#0ca1a6; }
+      nav div svg{width: 20px;height: 20px;}
+      nav div span{position: relative;bottom: 5px;padding-left: 4px;}
+      nav div .caret{display: none;width: 8px;height: 14px;fill:#ECF1F1;position: absolute;right: 7px;top: 13px}
+      nav div.active .caret{display: block;}
+      .nav.link.debug{ display: none; }
+
+
+      .sub-header{position:absolute;left:164px;width:323px;padding:10px 16px 16px 24px;}
+      .sub-header h2{margin-top: 6px;width:323px;padding: 0 0 15px 0; font-size: 1rem;text-transform: uppercase;border-bottom:1px solid #BDC7C7;margin-bottom:0;
+      font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;}
+
+      
+      p.warning{ background-color: #f2dede;border-color: #ebcccc;color: #a94442;padding: .75rem 1.25rem;font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;    margin-top: 0px;}
+
+
+      ol{margin: 0 0 1.5em;padding: 0;counter-reset: item;}
+      ol > li {margin: 0;font-size: 14px;margin-bottom: 12px;padding: 0 0 0 2em;text-indent: -1.5em;list-style-type: none;counter-increment: item;line-height: 20px;}
+      ol > li:before {display: inline-block;width: 1em;padding-right: 0.5em;font-weight: bold;text-align: right;content: counter(item) ".";}
+
+      .page{display: none;position: relative;}
+      .page.active{display: block;}
+      .page .title-bar{position: relative;}
+      .page.quick-start h2{border:0;}
+      .page.debug h2{border:0;}
+      .page p{line-height: 20px;font-size: 14px;}
+      .port{ color:#434F54;padding: 16px 0 16px;border-bottom: 1px solid #BDC7C7;position: relative;font-size: 14px;}
+      .port:hover .copy-link{display:block;}
+
+      .port .copy-link,
+      .reset-link{
+        transition: all ease-out .1s;
+        position: absolute;
+        right:0;
+        bottom: 9px;
+        border-radius: 2px;
+        padding: 8px;
+        border: 0;
+        border-bottom: 2px solid #BDC7C7;
+        box-shadow: 0 2px #BDC7C7;
+        box-sizing: border-box;
+        color:#434F54;
+        font-size:12px;
+        letter-spacing: .1em;
+        text-align: center;
+        display: none;
+        background: #DAE3E3;
+      }
+
+      .button-link {
+        transition: all ease-out .1s;
+        right:0;
+        bottom: 9px;
+        border-radius: 2px;
+        padding: 8px;
+        border: 0;
+        border-bottom: 2px solid #BDC7C7;
+        box-shadow: 0 2px #BDC7C7;
+        box-sizing: border-box;
+        color:#434F54;
+        font-size:12px;
+        letter-spacing: .1em;
+        text-align: center;
+        display: none;
+        background: #DAE3E3;
+        margin-bottom: 16px;
+      }
+
+      .reset-link,
+      .button-link{
+        display: block;
+      }
+
+      .port .copy-link:hover, 
+      .reset-link:hover,
+      .button-link:hover {
+        background:#DAE3E3;
+        cursor: pointer;
+        border-bottom: 1px solid #BDC7C7;
+        box-shadow: 0 1px #BDC7C7;
+      }
+      .port .copy-link:active, 
+      .reset-link:active,
+      .button-link:active {
+        border-bottom:0px;
+        box-shadow: 0 0px #434F54;
+        bottom: 7px;
+      }
+
+
+      .debug-menu{width:100%;}
+
+    </style>
+  </head>
+  <body>
+
+
+
+    <!--
+    /************************
+
+    Navigation 
+
+    ************************/
+    -->
+    <header>
+      <img src="assets/images/logo.png" width="132">
+      <nav>
+        <div class="nav link active" data-page="list-of-ports" >
+          <svg xmlns:xlink="http://www.w3.org/1999/xlink">
+            <use xlink:href="assets/images/icons.svg#icon-Editor-Main_Sidebar-Examples"></use>
+          </svg>
+          <span>List Of Ports</span>
+          <div class="caret svg-icon" name="Global-Triangle_Left"><div class="cover"></div><svg xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="assets/images/icons.svg#icon-Global-Triangle_Left"></use></svg></div>
+        </div>
+        <div class="nav link" data-page="quick-start">
+          <svg xmlns:xlink="http://www.w3.org/1999/xlink">
+            <use xlink:href="assets/images/icons.svg#icon-Editor-Main_Sidebar-Sketchbook"></use>
+          </svg>
+          <span>Quick Start</span>
+          <div class="caret svg-icon" name="Global-Triangle_Left"><div class="cover"></div><svg xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="assets/images/icons.svg#icon-Global-Triangle_Left"></use></svg></div>
+        </div>
+        <div class="nav link" data-page="about">
+          <svg xmlns:xlink="http://www.w3.org/1999/xlink">
+            <use xlink:href="assets/images/icons.svg#icon-Editor-Main_Sidebar-Help"></use>
+          </svg>
+          <span>About</span>
+          <div class="caret svg-icon" name="Global-Triangle_Left"><div class="cover"></div><svg xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="assets/images/icons.svg#icon-Global-Triangle_Left"></use></svg></div>
+        </div>
+
+        <div class="nav link debug" data-page="debug">
+          <svg xmlns:xlink="http://www.w3.org/1999/xlink">
+            <use xlink:href="assets/images/icons.svg#icon-Editor-Main_Sidebar-Serial_Monitor"></use>
+          </svg>
+          <span>Debug</span>
+          <div class="caret svg-icon" name="Global-Triangle_Left"><div class="cover"></div><svg xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="assets/images/icons.svg#icon-Global-Triangle_Left"></use></svg></div>
+        </div>
+      </nav>
+    </header>
+
+  
+    <div class="sub-header page-container">
+      <!--
+      /************************
+
+      List of Ports Page
+
+      ************************/
+      -->
+      <div class="page list-of-ports active">
+        <div class="title-bar">
+          <h2>List of Ports</h2> 
+          <button class="reset-link">Refresh List</button>
+        </div>
+      </div>
+
+
+      <!--
+      /************************
+
+      Quick Start Page
+
+      ************************/
+      -->  
+      <div class="page quick-start">
+        <div class="title-bar">
+          <h2>Quick Start</h2> 
+        </div>
+        <p class="warning">
+         <strong>Important!</strong> This Quick Start Guide assumes familiarity with Arduino. If you haven't used Arduino before find more information at their <a target="_blank" href="https://www.arduino.cc/">website</a>.
+        </p>
+        <p>
+          In this example we will load a sketch onto the Arduino, which makes the devices count 0 to 255 and send this information to your computer. Then we will set up your p5 sketch to listen to the infomration that Arduino is sending.
+        </p>
+        <p>
+          <ol>
+            <li>Plug in Arduino</li>
+            <li>Download Examples <a href="https://github.com/vanevery/p5.serialport/archive/master.zip">here</a>.</li>
+            <li>Upload patch to the Arduino located in <strong>examples/echo/echo.ino</strong></li>
+            <li>Find and copy your port from the avaible list in this application. It will most likely have <strong>usbmodem</strong> in its name.</li>
+            <li>Then with your favorite text editor open up <strong>sketch.js</strong> located in <strong>examples/echo/</strong> and on line two replace <strong>/dev/cu.usbmodem14131/</strong> with your own port name from step 4.</li>
+            <li>Open index.html located in <strong>examples/echo/</strong> with your favorite web browser. If everything was done correctly, you should see the webpage displaying numbers counting rapidly from 0 to 255.</li>
+          </ol>
+        </p>
+        <p>
+          Note, this application needs to be open for communication to work. This application acts as a bridge between your Arduino and your p5 sketch.  If this is not what you see it is most likely because the wrong port name was used in the sketch.js. Got back to the list and copy another port name and keep repeating this process till you find the right port. 
+        </p>
+        <p>
+          <button class="button-link"><a href="https://github.com/vanevery/p5.serialport">Go to Github page</a></button>
+        </p>
+      </div>
+
+      
+      <!--
+      /************************
+
+      About Page
+
+      ************************/
+      -->  
+      <div class="page about">
+        <div class="title-bar">
+          <h2>About</h2> 
+        </div>
+        <p>
+          This application enables communication between your p5 sketch and Arduino.
+        </p>
+        <p>
+          This application by <a href="">Tyler Stefanich</a>, wraps up p5.serial, a p5.js library that more or less clones the Processing Serial Library API, created by <a href="https://github.com/vanevery/p5.serialport">Shawn Van Every</a> with contributions from <a href="https://kaganjd.github.io/portfolio/">Jen Kagan</a> and <a href="http://tigoe.net/">Tom Igoe</a>.
+
+        </p>
+        <p>
+          <button class="button-link"><a href="https://github.com/vanevery/p5.serialport">p5.Serial Github Page</a></button>
+          <button class="button-link"><a href="https://github.com/vanevery/p5.serialport">p5.Serial App Github Page</a></button>
+        </p>
+      </div>
+
+
+      <!--
+      /************************
+
+      Debug Page 
+
+      ************************/
+      -->      
+      <div class="page debug">
+        <div class="title-bar">
+          <h2>Debug</h2> 
+        </div>
+        <p class="warning">
+          <strong>Important!</strong> It is recommended that you select, open, and close serial ports via your p5 sketch rather than this application but the methods for doing so for simple debugging are available here as well. Please note that if you "Open" or "Close" here it will also effect your sketch (opening/closing here will also open/close it for your sketch).
+        </p>
+        <p style="border-top:1px solid #BDC7C7; margin-bottom: 0;"></p>
+
+        <h2 style="padding-bottom:0;">Available Ports</h2> 
+        <p id="controls" class="advanced">
+          <select class="debug-menu" ></select>
+        </p>
+        <p id="controls" class="advanced">
+          <input class="button-link" style="display: inline" type="button" id="connect" value="Open">
+          <input class="button-link" style="display: inline" type="button" id="disconnect" value="Close">
+        </p>
+        <p class="advanced" style="border-top:1px solid #BDC7C7">
+            <h2 style="display: inline;margin-bottom: 12px;margin-right: 6px;" >Serial Console</h2><input style="position: relative;top:-2px;" id="serialconsoleenabled" type="checkbox" value="true" checked>
+            <textarea id="serialconsole" cols=80 rows=20 style="width:319px;margin-bottom: 8px;margin-top: 12px;border:0;color:grey"></textarea><br />
+            <input class="button-link" type="button" id="clear" value="Clear">
+        </p>
+        <p id="sendserial" class="advanced" style="border-top:1px solid #BDC7C7">
+          <h2>Send (ASCII):</h2>
+          <input type="text" id="message" size="80" rows=20 style="width:319px;margin-bottom: 8px;border:0;font-size:11px;padding-top: 3px;padding-bottom: 3px;color:grey">
+          <input class="button-link" type="button" id="send" value="Send">
+        </p>
+      </div>
+
+
+
+    </div> <!-- End of page-container -->
+  </body>
+  
+  <!-- Insert this line above script imports  -->
+  <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+
+  <script src="assets/javascript/p5.js" type="text/javascript"></script>
+  <script src="assets/javascript/p5.dom.js" type="text/javascript"></script>
+  <script language="javascript" type="text/javascript" src="assets/javascript/p5.serialport.js"></script>
+  <script>window.$ = window.jQuery = require('jquery');</script>
+  <script language="javascript" type="text/javascript" src="assets/javascript/clipboard.min.js"></script>
+
+  <!-- Insert this line after script imports -->
+  <script>if (window.module) module = window.module;</script>
+  
+  <script>
+    // You can also require other files to run in this process
+    require('./renderer.js');
+
+    // Global Variables
+    var serial; // Declare a "SerialPort" object
+    var menu;
+    var btns;
+    var clipboard;
+    //Global Variables Debug
+    var selectedPort;
+    var serialConsoleEnabledCheckbox;
+    var serialConsoleEnabled = true;
+    var consoleBuffer = [];
+    var lastConsoleLogTime = Date.now();
+    var LOGWAIT = 500;
+
+
+    function setup() {
+      serial = new p5.SerialPort();
+      serial.on('list', printList);
+
+      // Debug
+      serial.on('open', gotOpen);
+      serial.on('rawdata', gotRawData);
+      serial.on('error', gotError);
+      serial.on('close', gotClose);
+      $("#connect").mousedown(connectPressed);
+      $("#disconnect").mousedown(disconnectPressed);
+      $(".debug-menu").change(selectedPort);
+      serialConsoleEnabledCheckbox = $("#serialconsoleenabled");
+      serialConsoleEnabledCheckbox.change(serialConsoleSwitch);
+      serialConsole = select("#serialconsole"); 
+      $('#clear').mousedown(clearPressed);
+    }
+
+    // Got the list of ports
+    function printList(serialList) {
+
+      // Select Port Container
+      menu = $('.page.list-of-ports');
+
+      for (var i = 0; i < serialList.length; i++) 
+      {
+        // Create Port Container
+        var thisOption = $('<div/>');
+        thisOption.addClass('port');
+        thisOption.append('<span>'+serialList[i]+'</span>');
+
+        // Create Copy Button
+        var copy = $('<button/>');
+        copy.html('Copy');
+        copy.addClass('copy-link');
+        copy.attr('data-clipboard-text', serialList[i])
+          
+        // Append Copy Button to Port Container
+        thisOption.append(copy);
+
+        //Append 
+        menu.append(thisOption);
+
+        //Append to Debug Menu
+        $('.debug-menu').append($('<option>', { 
+          value: serialList[i],
+          text : serialList[i]
+        }));
+
+      }
+
+      // Code Copy Button animation and functionality
+      btns = document.querySelectorAll('button');
+      clipboard = new Clipboard(btns);
+
+      $('button').click(function(){
+        var btn = $(this);
+        var btnText = btn.parent('.port').children('span');
+        btnText.animate({opacity:0},150, function(){
+          btnText.html('Copied to Clipboard');
+          btnText.animate({opacity:1},150);
+        });
+        setTimeout(function() {
+           btnText.animate({opacity:0},70, function(){
+              btnText.html(btn.attr('data-clipboard-text'));
+              btnText.animate({opacity:1},70);
+          });
+        }, 1000);
+      });
+
+    }
+
+
+    // Navigation 
+    $('nav>div').click(function(){
+      // Change Navigation Link Styles
+      var navItem = $(this);
+      navItem.siblings('div').removeClass('active');
+      navItem.addClass('active');
+
+      // Hide old page and show new page
+      var page = navItem.attr('data-page');
+      $('.page').removeClass('active');
+      $('.page.'+page).addClass('active');
+
+    });
+
+
+    // Reload List of Ports by reloading the page
+    $('.reset-link').click(function(){
+      window.location.reload(true);
+    });
+
+
+    //open links externally by default
+    var shell = require('electron').shell;
+    $(document).on('click', 'a[href^="http"]', function(event) {
+        event.preventDefault();
+        shell.openExternal(this.href);
+    });
+
+
+
+
+    /*************
+
+    Debug
+
+    **************/
+    function debugSetup(){
+
+    }
+    var mylatesttap;
+    function doubletap() {
+       var now = new Date().getTime();
+       var timesince = now - mylatesttap;
+       if((timesince < 600) && (timesince > 0)){
+        // double tap   
+        $('.nav.link.debug').fadeIn(250);
+       }else{
+        // too much time to be a doubletap
+       }
+       mylatesttap = new Date().getTime();
+    }
+
+
+    function keyPressed() {
+      if (keyCode === ESCAPE) {
+        doubletap();
+      }
+    }
+
+    function portSelected() {
+      selectedPort = $( ".debug-menu" ).val();
+    }
+
+    function connectPressed() {
+      if (!selectedPort) {
+        selectedPort = $( ".debug-menu" ).val();
+      }
+      seriallog("Opening: " + selectedPort + "\n");
+      serial.open(selectedPort);
+      
+    }
+
+    function disconnectPressed() {
+      seriallog("Closing: " + selectedPort + "\n");
+      serial.close();
+    }
+    
+    function serialConsoleSwitch() {
+      if (serialConsoleEnabledCheckbox.is(':checked')) {
+        serialConsoleEnabled = true;
+      } else {
+        serialConsoleEnabled = false;
+      }
+    }   
+
+    function clearPressed() {
+        serialConsole.elt.value = "";
+    }
+
+    function sendPressed() {
+        serial.write(sendMessage.elt.value);
+        sendMessage.elt.value = "";
+    }
+
+    function gotOpen() {
+      seriallog("Serial Port is Open"+ "\n");
+    }
+
+    function gotClose() {
+      seriallog("Serial Port is Closed"+ "\n");
+    }
+
+    // Ut oh, here is an error, let's log it
+    function gotError(theerror) {
+      seriallog(theerror);
+    }
+
+    // We got raw from the serial port
+    function gotRawData(thedata) {
+      seriallog(thedata);
+    }
+
+
+    function seriallog(txt) {
+      //console.log(txt + "\n");
+      if (serialConsoleEnabled) {
+        
+//        if (serialConsole.elt.value.length >= 800)
+//        {
+//          serialConsole.elt.value = serialConsole.elt.value.substring(400);
+//        }
+//        serialConsole.elt.value += txt + "\n";
+//        serialConsole.elt.scrollTop = serialConsole.elt.scrollHeight;
+      
+        consoleBuffer.push(txt);
+        if (lastConsoleLogTime + LOGWAIT < Date.now()) {
+          if (serialConsole.elt.value.length >= 800)
+          {
+            serialConsole.elt.value = serialConsole.elt.value.substring(400);
+          }
+          serialConsole.elt.value += consoleBuffer.join("\r\n");
+          serialConsole.elt.scrollTop = serialConsole.elt.scrollHeight;
+        
+          lastConsoleLogTime = Date.now();
+          consoleBuffer.length = 0;
+          console.log("wrote to text area " + consoleBuffer.length);
+        }
+      }
+    }
+
+
+  </script>
+</html>

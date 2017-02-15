@@ -1,0 +1,44 @@
+{
+  "name": "p5serial-app",
+  "version": "0.1.0",
+  "description": "A simple app to connect your Arduino to p5.",
+  "main": "app/main.js",
+  "author": "Tyler Stefanich and Shawn Van Every",
+  "homepage": "https://github.com/vanevery/p5.serialport",
+  "license": "GPL",
+  "scripts": {
+    "postinstall": "install-app-deps",
+    "start": "electron .",
+    "pack": "build --dir",
+    "dist": "build -w"
+  },
+  "build": {
+    "appId": "com.example.electron-quick-start",
+    "files": [
+      "app/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ]
+  },
+  "repository": "https://github.com/vanevery/p5.serialport",
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial",
+    "demo"
+  ],
+  "dependencies": {
+    "jquery": "^3.1.1",
+    "serialport": "^4.0.3",
+    "ws": "^1.1.1"
+  },
+  "devDependencies": {
+    "electron": "^1.4.1",
+    "electron-builder": "^8.6.0",
+    "electron-rebuild": "^1.4.0",
+    "serialport": "^4.0.3",
+    "ws": "^1.1.1"
+  },
+  "nodeGypRebuild": "true"
+}
